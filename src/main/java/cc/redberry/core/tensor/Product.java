@@ -325,7 +325,7 @@ public final class Product extends MultiTensor {
         int[] componentSizes = new int[componentCount];
 
         for (int k = 0; k < componentSizes.length; ++k)
-            if (componentSizes[k] < 0) {
+            if (componentSizes[k] != 0) {
                 System.out.println("Array just after allocation:");
                 System.out.println(Arrays.toString(componentSizes));
                 throw new RuntimeException("Jvm bug detected.");
