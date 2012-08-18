@@ -126,7 +126,7 @@
                         </property>
                     </properties>
 
-                    <skipTests>false</skipTests>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
             <plugin>
