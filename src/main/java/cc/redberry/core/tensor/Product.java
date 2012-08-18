@@ -315,9 +315,24 @@ public final class Product extends MultiTensor {
                 infoToTensorIndices(upperInfo), infoToTensorIndices(lowerInfo), data.length + 1);
 
         //the number of components
-        final int componentCount = components[components.length - 1]; //Last element of this array contains components count 
+        //Last element of this array contains components count 
         //(this is specification of GraphUtils.calculateConnectedComponents method)
+        final int componentCount = components[components.length - 1];
+
+        //********************************************************
+        //**************** BEGIN JVM BUG *************************
+
         int[] componentSizes = new int[componentCount];
+
+        for (int k = 0; k < componentSizes.length; ++k)
+            if (componentSizes[k] < 0) {
+                System.out.println("Array just after allocation:");
+                System.out.println(Arrays.toString(componentSizes));
+                throw new RuntimeException("Jvm bug detected.");
+            }
+
+        //******************* END JVM BUG ************************
+        //********************************************************
 
         //finding each component size
         for (i = 1; i < components.length - 1; ++i)
