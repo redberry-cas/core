@@ -24,6 +24,7 @@ package cc.redberry.core.performance;
 
 import cc.redberry.core.context.CC;
 import cc.redberry.core.tensor.Tensors;
+import java.util.*;
 
 /**
  *
@@ -33,14 +34,19 @@ import cc.redberry.core.tensor.Tensors;
 public class JvmBug {
 
     public static void main(String[] args) {
-        CC.resetTensorNames(121313L);
-        for (int i = 0;; ++i) {
-            System.out.println(i);
-            Tensors.parse("(a+b)*(a*f_m+b*g_m)*(b*f^m+a*g^m)");
-            Tensors.parse("(Power[a, 2]*b+a*Power[b, 2])*g_{m}*g^{m}+(Power[a, 3]+Power[a, 2]*b+a*Power[b, 2]+Power[b, 3])*f^{m}*g_{m}+(Power[a, 2]*b+a*Power[b, 2])*f_{m}*f^{m}");
-            Tensors.parse("(Power[a, 2]*b+a*Power[b, 2])*g_{m}*g^{m}+(Power[a, 3]+Power[a, 2]*b+a*Power[b, 2]+Power[b, 3])*f^{m}*g_{m}+(Power[a, 2]*b+a*Power[b, 2])*f_{m}*f^{m}");
-            Tensors.parse("(Power[a, 2]*b+a*Power[b, 2])*g_{m}*g^{m}+(Power[a, 3]+Power[a, 2]*b+a*Power[b, 2]+Power[b, 3])*f^{m}*g_{m}+(Power[a, 2]*b+a*Power[b, 2])*f_{m}*f^{m}");
-            Tensors.parse("(Power[a, 2]*b+a*Power[b, 2])*g_{m}*g^{m}+(Power[a, 3]+Power[a, 2]*b+a*Power[b, 2]+Power[b, 3])*f^{m}*g_{m}+(Power[a, 2]*b+a*Power[b, 2])*f_{m}*f^{m}");
+        int[] a;
+        int n = 0;
+        for (int i = 0; i < 100000000; ++i) {
+            a = new int[10];
+            for (int f : a)
+                if (f != 0)
+                    throw new RuntimeException("Array just after allocation: "+ Arrays.toString(a));
+            Arrays.fill(a, 0);
+            for (int j = 0; j < a.length; ++j)
+                a[j] = (n - j)*i;
+            for (int f : a)
+                n += f;
         }
+        System.out.println(n);
     }
 }
