@@ -334,6 +334,12 @@ public class ParserTest {
     }
 
     @Test
+    public void testPowerAsp6() {
+        Tensor t = Tensors.parse("Power[1/2,1/2]");
+        TAssert.assertEquals(t,Tensors.parse(t.toString()));
+    }
+
+    @Test
     public void testConflictingIndices1() {
         Tensors.parse("(A_i^i*A_m^n+A_k^k*A_m^n)*(A_i^i*A_d^c+A_k^k*A_d^c)");
     }
@@ -348,4 +354,6 @@ public class ParserTest {
         Assert.assertTrue(Tensors.parseSimple("F{}_{BA_{21}C\\mu\\nu}").getName()
                 == Tensors.parseSimple("F_{BA_{21}C\\mu\\nu}").getName());
     }
+
+
 }
