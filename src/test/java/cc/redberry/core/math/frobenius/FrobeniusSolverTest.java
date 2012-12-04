@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -24,6 +24,8 @@ package cc.redberry.core.math.frobenius;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static cc.redberry.core.math.frobenius.FrobeniusUtils.*;
 
@@ -207,4 +209,18 @@ public class FrobeniusSolverTest {
         assertFbEquation(equations[0], solution);
         assertFbEquation(equations[1], solution);
     }
+
+    @Test
+    public void test19() {
+        int[][] equations = {{12, 16, 20, 27, 123}, {1, 0, 3, 0, 12}};
+
+        FrobeniusSolver solver = new FrobeniusSolver(equations);
+        int[] solution;
+        while ((solution = solver.take()) != null) {
+            System.out.println(Arrays.toString(solution));
+            System.out.println(solution);
+        }
+    }
+
+
 }
