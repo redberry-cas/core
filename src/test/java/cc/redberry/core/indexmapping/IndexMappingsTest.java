@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -27,6 +27,8 @@ import cc.redberry.core.indices.IndexType;
 import cc.redberry.core.indices.IndicesUtils;
 import cc.redberry.core.tensor.Tensor;
 import cc.redberry.core.tensor.Tensors;
+import cc.redberry.core.transformations.ContractIndices;
+import cc.redberry.core.transformations.expand.Expand;
 import cc.redberry.core.utils.TensorHashCalculator;
 import cc.redberry.core.utils.TensorUtils;
 import org.junit.Assert;
@@ -36,8 +38,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Set;
 
-import static cc.redberry.core.tensor.Tensors.addSymmetry;
-import static cc.redberry.core.tensor.Tensors.parse;
+import static cc.redberry.core.tensor.Tensors.*;
 
 public class IndexMappingsTest {
 
@@ -436,7 +437,7 @@ public class IndexMappingsTest {
         CC.resetTensorNames(8170410325559983904L);
 
         Tensor from = parse("e^{d}_{f}*(4*g_{ac}*d_{d}^{f} - 4*d_{a}^{f}*g_{dc} + 4*g_{ad}*d^{f}_{c})"),
-                to = parse("e^{d}_{f}*(4*g_{ac}*d_{d}^{f} + 4*d_{a}^{f}*g_{cd} - 4*g_{ad}*d_{c}^{f})");
+                 to = parse("e^{d}_{f}*(4*g_{ac}*d_{d}^{f} + 4*d_{a}^{f}*g_{cd} - 4*g_{ad}*d_{c}^{f})");
         Assert.assertFalse(TensorUtils.equals(from, to));
     }
 

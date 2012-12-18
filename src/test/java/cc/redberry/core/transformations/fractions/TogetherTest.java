@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -133,5 +133,12 @@ public class TogetherTest {
         t = Expand.expand(t);
         TAssert.assertIndicesConsistency(t);
         CC.setDefaultOutputFormat(OutputFormat.LaTeX);
+    }
+
+    @Test
+    public void test10() {
+        Tensor t = Tensors.parse("1/(a*b)+1/c");
+        t = Together.together(t);
+        TAssert.assertEquals(t, "(a*b+c)/(a*b*c)");
     }
 }
