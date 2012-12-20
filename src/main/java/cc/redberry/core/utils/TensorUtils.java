@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -539,4 +539,15 @@ public class TensorUtils {
         return newMatrix;
     }
 
+    public static boolean containsFractions(Tensor tensor) {
+        if (tensor instanceof SimpleTensor)
+            return false;
+        if (tensor instanceof Power)
+            return isNegativeIntegerNumber(tensor.get(1));
+        for (Tensor t : tensor) {
+            if (containsFractions(t))
+                return true;
+        }
+        return false;
+    }
 }

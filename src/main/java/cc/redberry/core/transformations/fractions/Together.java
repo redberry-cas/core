@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -26,6 +26,7 @@ import cc.redberry.core.number.Complex;
 import cc.redberry.core.tensor.*;
 import cc.redberry.core.tensor.iterator.TensorLastIterator;
 import cc.redberry.core.transformations.Transformation;
+import cc.redberry.core.transformations.factor.Factor;
 import cc.redberry.core.utils.THashMap;
 import cc.redberry.core.utils.TensorUtils;
 
@@ -45,29 +46,37 @@ import static cc.redberry.core.transformations.CollectScalarFactors.collectScala
 //TODO review after logical completion of tensors standard form strategy 
 public final class Together implements Transformation {
 
-    public static final Together INSTANCE = new Together();
+    public static final Together INSTANCE = new Together(false);
+    public static final Together TOGETHER_FACTOR = new Together(true);
 
-    private Together() {
+    private final boolean doFactor;
+
+    private Together(boolean doFactor) {
+        this.doFactor = doFactor;
     }
 
     @Override
     public Tensor transform(Tensor t) {
-        return together(t);
+        return together(t, doFactor);
     }
 
     public static Tensor together(Tensor t) {
+        return together(t, false);
+    }
+
+    public static Tensor together(Tensor t, boolean doFactor) {
         TensorLastIterator iterator = new TensorLastIterator(t);
         Tensor c;
         while ((c = iterator.next()) != null) {
             if (c instanceof Sum)
-                iterator.set(togetherSum(c));
+                iterator.set(togetherSum(c, doFactor));
             if (c instanceof Product)
                 iterator.set(collectScalarFactorsInProduct((Product) c));
         }
         return iterator.result();
     }
 
-    private static Tensor togetherSum(Tensor t) {
+    private static Tensor togetherSum(Tensor t, boolean doFactor) {
         boolean performTogether = false;
         for (Tensor s : t)
             if (s instanceof Product) {
@@ -83,7 +92,7 @@ public final class Together implements Transformation {
         if (!performTogether)
             return t;
 
-        SplitStruct base = splitFraction(t.get(0)), temp;
+        SplitStruct base = splitFraction(t.get(0), doFactor), temp;
         @SuppressWarnings("unchecked") List<Tensor> numeratorTerms[] = new List[t.size()];
         numeratorTerms[0] = new ArrayList<>();
         numeratorTerms[0].add(base.numerator);
@@ -92,7 +101,7 @@ public final class Together implements Transformation {
         int i, j;
         for (i = 1; i < t.size(); ++i) {
             s = t.get(i);
-            temp = splitFraction(s);
+            temp = splitFraction(s, doFactor);
 
             List<Tensor> newNumeratorTerm = new ArrayList<>();
             newNumeratorTerm.add(temp.numerator);
@@ -148,24 +157,28 @@ public final class Together implements Transformation {
         }
     }
 
-    private static SplitStruct splitFraction(Tensor tensor) {
+    private static SplitStruct splitFraction(Tensor tensor, boolean doFactor) {
+        if (doFactor)
+            tensor = Factor.factor(tensor);
+
         THashMap<Tensor, Complex> map = new THashMap<>();
         if (checkPower(tensor)) {
             map.put(tensor.get(0), ((Complex) tensor.get(1)).negate());
             return new SplitStruct(map, Complex.ONE);
         }
         if (tensor instanceof Product) {
-            Product product = (Product) tensor;
+            Tensor product = tensor;
             Tensor temp = null, m;
             for (int i = tensor.size() - 1; i >= 0; --i) {
                 m = tensor.get(i);
                 if (checkPower(m)) {
                     map.put(m.get(0), ((Complex) m.get(1)).negate());
-                    temp = product.remove(i);
-                    if (temp instanceof Product)
-                        product = (Product) temp;
-                    else
-                        product = null;//prevent error in remove (NPE will be thrown)
+                    if (product instanceof Product)
+                        temp = product = ((Product) product).remove(i);
+                    else {
+                        assert i == 0;
+                        temp = Complex.ONE;
+                    }
                 }
             }
             if (temp == null)

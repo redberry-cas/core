@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -24,7 +24,9 @@ package cc.redberry.core.tensor;
 
 import cc.redberry.core.TAssert;
 import cc.redberry.core.context.CC;
+import cc.redberry.core.context.ContextManager;
 import cc.redberry.core.context.OutputFormat;
+import cc.redberry.core.indexmapping.IndexMappings;
 import cc.redberry.core.indices.IndexType;
 import cc.redberry.core.number.Complex;
 import cc.redberry.core.transformations.ContractIndices;
@@ -351,8 +353,8 @@ public class TensorsTest {
 
         t = parse("ArcTan[2**(1/2*I) + Log[1/(8.)]]+1/ArcCot[2-I]*(8 - 3*I)**91 + ArcSin[3]**(1/23 + I)");
         Assert.assertEquals(parse("-1.0825384369552736E84-I*1.4034892133454258E85"), t);
-        System.out.println(parse("0*a"));
     }
+
 
     @Test
     public void test4() {

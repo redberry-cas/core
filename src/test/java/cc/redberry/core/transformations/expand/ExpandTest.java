@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static cc.redberry.core.tensor.Tensors.parse;
+import static cc.redberry.core.transformations.expand.Expand.EXPAND;
 import static cc.redberry.core.transformations.expand.Expand.expand;
 import static cc.redberry.core.transformations.expand.ExpandPort.expandUsingPort;
 
@@ -396,5 +397,12 @@ public class ExpandTest {
     public void test38() {
         Tensor t = parse("1/(a+b)**2 + Sin[(a+b)*(c+d)]");
         TAssert.assertTrue(t == expand(t));
+    }
+
+    @Test
+    public void test39() {
+        Tensor t = parse("(-4*I)*f_mn*s_pq*(f^na - t^na + u^an)");
+        System.out.println(expand(t));
+//        TAssert.assertTrue(t == expand(t));
     }
 }

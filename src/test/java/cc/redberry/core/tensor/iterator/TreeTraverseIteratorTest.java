@@ -9,7 +9,7 @@
  *
  * Redberry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * Redberry is distributed in the hope that it will be useful,
@@ -438,6 +438,16 @@ public class TreeTraverseIteratorTest {
     @Test
     public void test11() {
         Tensor tensor = Tensors.parse("a");
+        TreeTraverseIterator iterator = new TreeTraverseIterator(tensor);
+        while (iterator.next() != null)
+            if (TensorUtils.equalsExactly(iterator.current(), "a"))
+                iterator.set(Tensors.parse("b"));
+        Assert.assertTrue(TensorUtils.equalsExactly(iterator.result(), "b"));
+    }
+
+    @Test
+    public void test12() {
+        Tensor tensor = Tensors.parse("a + Sin[x - y]");
         TreeTraverseIterator iterator = new TreeTraverseIterator(tensor);
         while (iterator.next() != null)
             if (TensorUtils.equalsExactly(iterator.current(), "a"))
