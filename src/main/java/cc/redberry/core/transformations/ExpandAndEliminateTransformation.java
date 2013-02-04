@@ -20,35 +20,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Redberry. If not, see <http://www.gnu.org/licenses/>.
  */
-package cc.redberry.core.indices;
+package cc.redberry.core.transformations;
+
+import cc.redberry.core.tensor.Tensor;
+import cc.redberry.core.transformations.expand.ExpandTransformation;
 
 /**
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
- * @since 1.0
  */
-final class SimpleIndicesOfTensor extends SimpleIndicesAbstract {
+public class ExpandAndEliminateTransformation implements Transformation {
+    public static final ExpandAndEliminateTransformation EXPAND_AND_ELIMINATE = new ExpandAndEliminateTransformation();
 
-    SimpleIndicesOfTensor(int[] data, IndicesSymmetries symmetries) {
-        super(data, symmetries);
-    }
-
-    SimpleIndicesOfTensor(boolean notResort, int[] data, IndicesSymmetries symmetries) {
-        super(notResort, data, symmetries);
+    private ExpandAndEliminateTransformation() {
     }
 
     @Override
-    public void setSymmetries(IndicesSymmetries symmetries) {
-        throw new UnsupportedOperationException();
+    public Tensor transform(Tensor t) {
+        return expandAndEliminate(t);
     }
 
-    @Override
-    public IndicesSymmetries getSymmetries() {
-        return symmetries;
-    }
-
-    @Override
-    protected SimpleIndices create(int[] data, IndicesSymmetries symmetries) {
-        return new SimpleIndicesOfTensor(true, data, symmetries);
+    public static Tensor expandAndEliminate(Tensor t) {
+        return EliminateMetricsTransformation.eliminate(ExpandTransformation.expand(t, EliminateMetricsTransformation.ELIMINATE_METRICS));
     }
 }
