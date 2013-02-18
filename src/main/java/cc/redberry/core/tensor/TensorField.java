@@ -23,6 +23,7 @@
 package cc.redberry.core.tensor;
 
 import cc.redberry.core.context.OutputFormat;
+import cc.redberry.core.indices.IndicesFactory;
 import cc.redberry.core.indices.SimpleIndices;
 
 import java.util.Arrays;
@@ -61,7 +62,19 @@ public final class TensorField extends SimpleTensor {
     }
 
     public SimpleIndices getArgIndices(int i) {
+        if (argIndices[i] == null)
+            return IndicesFactory.createSimple(null, args[i].getIndices().getFree());
         return argIndices[i];
+    }
+
+    /**
+     * Returns whether i-th argument indices are fixed on parsing.
+     *
+     * @param i arg position
+     * @return {@code true} if i-th argument indices are fixed on parsing
+     */
+    public boolean isArgIndicesFixed(int i) {
+        return argIndices[i] != null;
     }
 
     @Override

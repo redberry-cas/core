@@ -320,13 +320,17 @@ public final class Tensors {
         if (arguments.length == 0)
             throw new IllegalArgumentException("No arguments in field.");
         for (int i = 0; i < argIndices.length; ++i)
-            if (!arguments[i].getIndices().getFree().equalsRegardlessOrder(argIndices[i]))
+            if (argIndices[i] != null && !arguments[i].getIndices().getFree().equalsRegardlessOrder(argIndices[i]))
                 throw new IllegalArgumentException("Arguments indices are inconsistent with arguments.");
 
         StructureOfIndices[] structures = new StructureOfIndices[argIndices.length + 1];
         structures[0] = indices.getStructureOfIndices();
         for (int i = 0; i < argIndices.length; ++i)
-            structures[i + 1] = argIndices[i].getStructureOfIndices();
+            if (argIndices[i] == null)
+                //TODO potential problem with non-metric types
+                structures[i + 1] = new StructureOfIndices(IndicesFactory.createSimple(null, arguments[i].getIndices().getFree()));
+            else
+                structures[i + 1] = argIndices[i].getStructureOfIndices();
         NameDescriptor descriptor = CC.getNameManager().mapNameDescriptor(name, structures);
         return new TensorField(descriptor.getId(),
                 UnsafeIndicesFactory.createOfTensor(descriptor.getSymmetries(), indices),
