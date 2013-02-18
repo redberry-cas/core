@@ -62,8 +62,9 @@ public class ParseTokenTensorField extends ParseTokenSimpleTensor {
         typeStructures[0] = new StructureOfIndices(indices);
         for (int i = 0; i < argumentsIndices.length; ++i) {
             if (argumentsIndices[i] == null)
-                argumentsIndices[i] = IndicesFactory.createSimple(null, content[i].getIndices().getFree());
-            typeStructures[i + 1] = new StructureOfIndices(argumentsIndices[i]);
+                typeStructures[i + 1] = new StructureOfIndices(IndicesFactory.createSimple(null, content[i].getIndices().getFree()));
+            else
+                typeStructures[i + 1] = new StructureOfIndices(argumentsIndices[i]);
         }
         return new NameAndStructureOfIndices(name, typeStructures);
     }
@@ -80,10 +81,10 @@ public class ParseTokenTensorField extends ParseTokenSimpleTensor {
 
     @Override
     public Tensor toTensor() {
-        Tensor[] arguments = contentToTensors();
-        for (int i = 0; i < arguments.length; ++i)
-            if (argumentsIndices[i] == null)
-                argumentsIndices[i] = IndicesFactory.createSimple(null, arguments[i].getIndices().getFree());
+        //Tensor[] arguments = contentToTensors();
+        //for (int i = 0; i < arguments.length; ++i)
+        //    if (argumentsIndices[i] == null)
+        //        argumentsIndices[i] = IndicesFactory.createSimple(null, arguments[i].getIndices().getFree());
         return Tensors.field(name, indices, argumentsIndices, contentToTensors());
     }
 }

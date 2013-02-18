@@ -22,6 +22,7 @@
  */
 package cc.redberry.core.indexmapping;
 
+import cc.redberry.core.indices.SimpleIndices;
 import cc.redberry.core.number.Complex;
 import cc.redberry.core.tensor.*;
 import cc.redberry.core.tensor.functions.*;
@@ -51,7 +52,7 @@ public final class IndexMappings {
      * @return port of mappings of indices
      */
     public static MappingsPort simpleTensorsPort(SimpleTensor from, SimpleTensor to) {
-        final IndexMappingProvider provider = ProviderSimpleTensor.FACTORY_SIMPLETENSOR.create(IndexMappingProvider.Util.singleton(new IndexMappingBufferImpl()), from, to);
+        final IndexMappingProvider provider = ProviderSimpleTensor.FACTORY_SIMPLE_TENSOR.create(IndexMappingProvider.Util.singleton(new IndexMappingBufferImpl()), from, to);
         provider.tick();
         return new MappingsPortRemovingContracted(provider);
     }
@@ -154,6 +155,22 @@ public final class IndexMappings {
         return createPort(new IndexMappingBufferTester(buffer), from, to).take() != null;
     }
 
+    public static boolean testMapping(Tensor from, Tensor to, SimpleIndices fromIndices, SimpleIndices toIndices, boolean sign) {
+        return testMapping1(createPort(new IndexMappingBufferTester(fromIndices, toIndices, sign), from, to));
+    }
+
+    public static boolean testMapping(Tensor from, Tensor to, int[] fromIndices, int[] toIndices, boolean sign) {
+        return testMapping1(createPort(new IndexMappingBufferTester(fromIndices, toIndices, sign), from, to));
+    }
+
+    private static boolean testMapping1(MappingsPort provider) {
+        IndexMappingBuffer buffer;
+        while ((buffer = provider.take()) != null)
+            if (buffer.getSign() == false)
+                return true;
+        return false;
+    }
+
     private static Tensor extractNonComplexFactor(Tensor t) {
         Product p = (Product) t;
         if (p.getFactor().isMinusOne())
@@ -202,8 +219,8 @@ public final class IndexMappings {
 
     static {
         map = new HashMap<>();
-        map.put(SimpleTensor.class, ProviderSimpleTensor.FACTORY_SIMPLETENSOR);
-        map.put(TensorField.class, ProviderSimpleTensor.FACTORY_TENSORFIELD);
+        map.put(SimpleTensor.class, ProviderSimpleTensor.FACTORY_SIMPLE_TENSOR);
+        map.put(TensorField.class, ProviderSimpleTensor.FACTORY_TENSOR_FIELD);
         map.put(Product.class, ProviderProduct.FACTORY);
         map.put(Sum.class, ProviderSum.FACTORY);
         map.put(Expression.class, ProviderSum.FACTORY);

@@ -23,7 +23,9 @@
 package cc.redberry.core.indexmapping;
 
 import cc.redberry.core.indices.IndicesUtils;
+import cc.redberry.core.indices.SimpleIndices;
 import cc.redberry.core.tensor.Tensor;
+import cc.redberry.core.utils.ArraysUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -52,11 +54,39 @@ public final class IndexMappingBufferTester implements IndexMappingBuffer {
         Arrays.sort(from);
         this.from = this.to = from;
         this.signum = sign;
-        innerBuffer = new IndexMappingBufferImpl();
+        this.innerBuffer = new IndexMappingBufferImpl();
     }
 
     /**
-     * Creates tester with  for specified from and to indices.
+     * Creates tester with for explicit mapping between tensor indices.
+     *
+     * @param from from indices
+     * @param to   to indices
+     */
+    public IndexMappingBufferTester(SimpleIndices from, SimpleIndices to, boolean sign) {
+        this.from = IndicesUtils.getIndicesNames(from);
+        this.to = IndicesUtils.getIndicesNames(to);
+        this.signum = sign;
+        this.innerBuffer = new IndexMappingBufferImpl();
+        ArraysUtils.quickSort(this.from, this.to);
+    }
+
+    /**
+     * Creates tester with for explicit mapping between tensor indices.
+     *
+     * @param from from indices
+     * @param to   to indices
+     */
+    public IndexMappingBufferTester(int[] from, int[] to, boolean sign) {
+        this.from = IndicesUtils.getIndicesNames(from);
+        this.to = IndicesUtils.getIndicesNames(to);
+        this.signum = sign;
+        this.innerBuffer = new IndexMappingBufferImpl();
+        ArraysUtils.quickSort(this.from, this.to);
+    }
+
+    /**
+     * Creates tester with for specified from and to indices.
      */
     public IndexMappingBufferTester(FromToHolder holder) {
         this.from = holder.from;

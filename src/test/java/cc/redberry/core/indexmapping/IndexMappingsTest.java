@@ -25,6 +25,7 @@ package cc.redberry.core.indexmapping;
 import cc.redberry.core.context.CC;
 import cc.redberry.core.indices.IndexType;
 import cc.redberry.core.indices.IndicesUtils;
+import cc.redberry.core.tensor.SimpleTensor;
 import cc.redberry.core.tensor.Tensor;
 import cc.redberry.core.tensor.Tensors;
 import cc.redberry.core.utils.TensorHashCalculator;
@@ -36,8 +37,11 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Set;
 
-import static cc.redberry.core.tensor.Tensors.addSymmetry;
-import static cc.redberry.core.tensor.Tensors.parse;
+import static cc.redberry.core.indexmapping.IndexMappings.mappingExists;
+import static cc.redberry.core.indexmapping.IndexMappings.testMapping;
+import static cc.redberry.core.tensor.Tensors.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class IndexMappingsTest {
 
@@ -432,7 +436,7 @@ public class IndexMappingsTest {
 
         Tensor from = parse("e^{d}_{f}*(4*g_{ac}*d_{d}^{f} - 4*d_{a}^{f}*g_{dc} + 4*g_{ad}*d^{f}_{c})"),
                 to = parse("e^{d}_{f}*(4*g_{ac}*d_{d}^{f} + 4*d_{a}^{f}*g_{cd} - 4*g_{ad}*d_{c}^{f})");
-        Assert.assertFalse(TensorUtils.equals(from, to));
+        assertFalse(TensorUtils.equals(from, to));
     }
 
 
@@ -467,7 +471,7 @@ public class IndexMappingsTest {
 //            System.out.println(buffer);
 
 
-        Assert.assertFalse(TensorUtils.equals(from, to));
+        assertFalse(TensorUtils.equals(from, to));
     }
 
     @Test
@@ -478,4 +482,42 @@ public class IndexMappingsTest {
         Assert.assertTrue(buffer == null);
     }
 
+    @Test
+    public void testTestMapping1() throws Exception {
+        SimpleTensor t1 = parseSimple("A_ij"), t2 = parseSimple("A_ji");
+        assertTrue(testMapping(t1, t2, t1.getIndices(), t2.getIndices(), false));
+        assertFalse(testMapping(t1, t2, t1.getIndices(), t1.getIndices(), false));
+        assertFalse(testMapping(t1, t2, t1.getIndices(), t1.getIndices(), true));
+        assertFalse(testMapping(t1, t2, t1.getIndices(), t2.getIndices(), true));
+    }
+
+    @Test
+    public void testTestMapping2() throws Exception {
+        setAntiSymmetric("A_ij");
+        SimpleTensor t1 = parseSimple("A_ij"), t2 = parseSimple("A_ji");
+        assertTrue(testMapping(t1, t2, t1.getIndices(), t2.getIndices(), false));
+        assertFalse(testMapping(t1, t2, t1.getIndices(), t1.getIndices(), false));
+        assertTrue(testMapping(t1, t2, t1.getIndices(), t1.getIndices(), true));
+        assertFalse(testMapping(t1, t2, t1.getIndices(), t2.getIndices(), true));
+    }
+
+    @Test
+    public void testField3() throws Exception {
+        // F[D_ij:_ij] = F[D_11, D_12, D_21, D22]
+        // F[D_ji:_ij] = F[D_11, D_21, D_12, D22]
+        // F_k[D_ij:_ij] = D_ka*F^a
+        // F_k[D_ji: _ji] - F_k[D_ij: _ij] == 0
+
+        Tensor from = parse("F_i[K_mn:_mn]");
+        Tensor to = parse("F_i[K_nm:_mn]");
+        assertFalse(mappingExists(from, to));
+    }
+
+    @Test
+    public void testField4() throws Exception {
+        addSymmetry("K_mn", 1, 0);
+        Tensor from = parse("F_i[K_mn:_mn]");
+        Tensor to = parse("F_i[K_nm:_mn]");
+        assertTrue(mappingExists(from, to));
+    }
 }

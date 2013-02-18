@@ -24,6 +24,8 @@ package cc.redberry.core.indexmapping;
 
 import cc.redberry.core.utils.ArraysUtils;
 
+import static cc.redberry.core.indices.IndicesUtils.getIndicesNames;
+
 /**
  * Holds the array of from indices and to indices of mapping.
  * This class is technical and not a part of the public API.
@@ -36,6 +38,9 @@ public final class FromToHolder {
     final int[] from, to;
     final boolean sign;
 
+    /**
+     * All from indices should be lower.
+     */
     FromToHolder(int[] from, int[] to, boolean sign) {
         ArraysUtils.quickSort(from, to);
         this.from = from;
@@ -90,5 +95,9 @@ public final class FromToHolder {
             System.arraycopy(aFrom, aPointer, resultFrom, counter, aFrom.length - aPointer);
         }
         return new FromToHolder(resultFrom, resultTo, sign ^ other.sign);
+    }
+
+    static FromToHolder create(int[] from, int[] to, boolean sign) {
+        return new FromToHolder(getIndicesNames(from), getIndicesNames(to), sign);
     }
 }

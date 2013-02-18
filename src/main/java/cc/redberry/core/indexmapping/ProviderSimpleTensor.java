@@ -39,7 +39,7 @@ import java.util.Iterator;
  */
 final class ProviderSimpleTensor extends IndexMappingProviderAbstractFT<SimpleTensor> {
 
-    public static final IndexMappingProviderFactory FACTORY_SIMPLETENSOR = new IndexMappingProviderFactory() {
+    public static final IndexMappingProviderFactory FACTORY_SIMPLE_TENSOR = new IndexMappingProviderFactory() {
 
         @Override
         public IndexMappingProvider create(IndexMappingProvider opu, Tensor from, Tensor to) {
@@ -50,17 +50,20 @@ final class ProviderSimpleTensor extends IndexMappingProviderAbstractFT<SimpleTe
             return new ProviderSimpleTensor(opu, (SimpleTensor) from, (SimpleTensor) to);
         }
     };
-    public static final IndexMappingProviderFactory FACTORY_TENSORFIELD = new IndexMappingProviderFactory() {
+    public static final IndexMappingProviderFactory FACTORY_TENSOR_FIELD = new IndexMappingProviderFactory() {
 
         @Override
         public IndexMappingProvider create(IndexMappingProvider opu, Tensor from, Tensor to) {
-            if (((TensorField) from).getName() != ((TensorField) to).getName())
+            final TensorField fFrom = (TensorField) from, fTo = (TensorField) to;
+            if (fFrom.getName() != fTo.getName())
                 return IndexMappingProvider.Util.EMPTY_PROVIDER;
-            for (int i = 0; i < from.size(); ++i){
-                if (!IndexMappings.positiveMappingExists(from.get(i), to.get(i)))
+
+            //F[A_ij*B^j_k] -> _ik  <->  F[A_bc*B^c_a] -> _ab
+            for (int i = 0; i < fFrom.size(); ++i)
+                if (!IndexMappings.testMapping(fFrom.get(i), fTo.get(i), fFrom.getArgIndices(i), fTo.getArgIndices(i), false))
                     return IndexMappingProvider.Util.EMPTY_PROVIDER;
-            }
-            return new ProviderSimpleTensor(opu, (SimpleTensor) from, (SimpleTensor) to);
+
+            return new ProviderSimpleTensor(opu, fFrom, fTo);
         }
     };
     private Iterator<Symmetry> symmetryIterator;

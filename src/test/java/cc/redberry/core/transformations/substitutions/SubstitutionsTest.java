@@ -258,8 +258,8 @@ public class SubstitutionsTest {
         Tensor target = parse("A^a_b+F^a_b[A_m^n]");
         Transformation sp = new SubstitutionTransformation(from, to);
         target = sp.transform(target);
-        System.out.println(target);
-        Tensor expected = parse("-B_{b}*C^{a}+B^a*C_b+F^{a}_{b}[B_{m}*C^{n}-B^n*C_m]");
+        //System.out.println(target);
+        Tensor expected = parse("-B_{b}*C^{a}+B^a*C_b+F^{a}_{b}[B_m*C^n-B^n*C_m:_m^n]");
         assertTrue(TensorUtils.equals(target, expected));
 
     }
