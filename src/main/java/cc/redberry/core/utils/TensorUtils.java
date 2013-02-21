@@ -39,7 +39,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static cc.redberry.core.tensor.Tensors.*;
+import static cc.redberry.core.tensor.Tensors.multiply;
+import static cc.redberry.core.tensor.Tensors.negate;
 
 /**
  * This class contains various useful methods related with tensors.
@@ -69,7 +70,6 @@ public class TensorUtils {
     /*
      *       isSomething()
      */
-
     public static boolean isZeroOrIndeterminate(Tensor tensor) {
         return tensor instanceof Complex && NumberUtils.isZeroOrIndeterminate((Complex) tensor);
     }

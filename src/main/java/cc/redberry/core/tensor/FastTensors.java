@@ -51,6 +51,7 @@ public final class FastTensors {
      * @return resulting sum
      */
     public static Tensor multiplySumElementsOnFactor(Sum sum, Tensor factor) {
+        //TODO what's about indices clash?
         if (TensorUtils.isZero(factor))
             return Complex.ZERO;
         if (TensorUtils.isOne(factor))
